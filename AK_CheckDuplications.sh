@@ -34,7 +34,6 @@ jumpBackDIR=$(pwd)
 cd $TEMP_DIR
 
 #remove whitespaces from fles
-for f in *\ *; do mv "$f" "${f// /_}"; done
 #list all files into variable
 filesToCompare=( $( ls $TEMP_DIR ) )
 
@@ -47,8 +46,13 @@ do :
     do :
     if [ $i != $j ] ; then
         compare $i $j 2>/dev/null &
+    	pids[${counter}]=$!
     fi
     done
     unset filesToCompare[counter]
     ((counter=counter+1))
+done
+
+for pid in ${pids[*]}; do
+    wait $pid
 done
